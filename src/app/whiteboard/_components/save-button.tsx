@@ -1,18 +1,19 @@
 import {
   DefaultMainMenu,
   DefaultMainMenuContent,
-  getSnapshot,
   TldrawUiMenuGroup,
   TldrawUiMenuItem,
-  useEditor,
+  useDialogs,
 } from "tldraw";
+import { SaveDialog } from "./save-dialog";
 
 export const SaveButton = () => {
-  const editor = useEditor();
-  const handleSave = async () => {
-    const { document, session } = getSnapshot(editor.store);
-    console.log(document, session);
-    // await saveDocumentState(documentId, document);
+  const { addDialog } = useDialogs();
+  const handleSelect = () => {
+    addDialog({
+      component: SaveDialog,
+      id: "save-dialog",
+    });
   };
   return (
     <DefaultMainMenu>
@@ -22,7 +23,7 @@ export const SaveButton = () => {
             id="save"
             label="Save"
             readonlyOk
-            onSelect={handleSave}
+            onSelect={handleSelect}
           />
         </TldrawUiMenuGroup>
       </div>
