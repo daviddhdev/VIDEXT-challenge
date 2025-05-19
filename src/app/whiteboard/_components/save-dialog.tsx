@@ -7,6 +7,7 @@ import {
   TldrawUiDialogBody,
   TldrawUiDialogFooter,
   TldrawUiDialogHeader,
+  TldrawUiDialogTitle,
   useEditor,
   useToasts,
 } from "tldraw";
@@ -21,10 +22,12 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { api } from "~/trpc/react";
 
 const formSchema = z.object({
   documentName: z.string().min(2).max(50),
 });
+
 interface SaveDialogProps {
   onClose: () => void;
 }
@@ -32,17 +35,37 @@ interface SaveDialogProps {
 export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
   const editor = useEditor();
   const { addToast } = useToasts();
+  const { mutateAsync: createDocument, isPending } =
+    api.document.create.useMutation();
 
   const onSubmit = async ({ documentName }: { documentName: string }) => {
-    const { document, session } = getSnapshot(editor.store);
-    console.log(document, session);
-    // await saveDocumentState(documentId, document);
-    onClose();
-    addToast({
-      title: "Document saved",
-      description: `Document ${documentName} saved successfully`,
-      severity: "success",
-    });
+    const { document } = getSnapshot(editor.store);
+    try {
+      await createDocument({
+        name: documentName,
+        content: JSON.stringify(document),
+      });
+
+      onClose();
+      addToast({
+        title: "Document saved",
+        description: `Document ${documentName} saved successfully`,
+        severity: "success",
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("already exists")) {
+        form.setError("documentName", {
+          type: "manual",
+          message: error.message,
+        });
+      } else {
+        addToast({
+          title: "Error",
+          description: "Failed to save document",
+          severity: "error",
+        });
+      }
+    }
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,12 +74,13 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
       documentName: "",
     },
   });
+
   return (
     <>
       <TldrawUiDialogHeader className="p-3">
-        <span className="text-lg font-bold">
+        <TldrawUiDialogTitle className="text-lg! font-bold! text-center">
           Save your document to the database
-        </span>
+        </TldrawUiDialogTitle>
       </TldrawUiDialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -68,7 +92,11 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
                 <FormItem>
                   <FormLabel>Document Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Meeting Notes" {...field} />
+                    <Input
+                      placeholder="Meeting Notes"
+                      {...field}
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -79,8 +107,10 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
             <Button type="button" variant="outline" onClick={onClose}>
               <TldrawUiButtonLabel>Cancel</TldrawUiButtonLabel>
             </Button>
-            <Button type="submit">
-              <TldrawUiButtonLabel>Save</TldrawUiButtonLabel>
+            <Button type="submit" disabled={isPending}>
+              <TldrawUiButtonLabel>
+                {isPending ? "Saving..." : "Save"}
+              </TldrawUiButtonLabel>
             </Button>
           </TldrawUiDialogFooter>
         </form>

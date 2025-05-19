@@ -1,5 +1,9 @@
+import { HydrateClient } from "~/trpc/server";
 import { Whiteboard } from "./_components/whiteboard";
-
 export default function WhiteboardPage() {
-  return <Whiteboard />;
+  return (
+    <HydrateClient>
+      <Whiteboard />
+    </HydrateClient>
+  );
 }
