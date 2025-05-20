@@ -1,5 +1,7 @@
 "use client";
 import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { deleteDocument } from "~/app/_actions/documents";
 import { Button } from "~/components/ui/button";
 
@@ -12,10 +14,19 @@ export const DocumentActions: React.FC<DocumentActionsProps> = ({
   documentId,
   documentName,
 }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    await deleteDocument(documentId);
+    try {
+      setIsDeleting(true);
+      await deleteDocument(documentId);
+      setIsDeleting(false);
+      toast.success("Document deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete document");
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -24,10 +35,10 @@ export const DocumentActions: React.FC<DocumentActionsProps> = ({
         {documentName}
       </span>
       <Button
-        variant="ghost"
+        variant="destructive"
         size="icon"
-        className="z-10 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground hover:cursor-pointer"
         onClick={handleDelete}
+        disabled={isDeleting}
       >
         <Trash2 className="h-4 w-4" />
       </Button>

@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import {
   getSnapshot,
   TldrawUiButtonLabel,
@@ -9,7 +10,6 @@ import {
   TldrawUiDialogHeader,
   TldrawUiDialogTitle,
   useEditor,
-  useToasts,
 } from "tldraw";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
@@ -34,7 +34,6 @@ interface SaveDialogProps {
 
 export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
   const editor = useEditor();
-  const { addToast } = useToasts();
   const { mutateAsync: createDocument, isPending } =
     api.document.create.useMutation();
 
@@ -47,11 +46,7 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
       });
 
       onClose();
-      addToast({
-        title: "Document saved",
-        description: `Document ${documentName} saved successfully`,
-        severity: "success",
-      });
+      toast.success(`Document ${documentName} saved successfully`);
     } catch (error) {
       if (error instanceof Error && error.message.includes("already exists")) {
         form.setError("documentName", {
@@ -59,11 +54,7 @@ export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
           message: error.message,
         });
       } else {
-        addToast({
-          title: "Error",
-          description: "Failed to save document",
-          severity: "error",
-        });
+        toast.error("Failed to save document");
       }
     }
   };
