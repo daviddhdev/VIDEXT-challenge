@@ -1,12 +1,14 @@
 "use client";
 import { Tldraw, type TLComponents, type TLEditorSnapshot } from "tldraw";
-import { SaveButton } from "./save-button";
+import { HomePanel } from "./home-panel";
+import { MainMenu } from "./main-menu";
 interface WhiteboardProps {
   snapshot?: TLEditorSnapshot;
 }
 
 const components: TLComponents = {
-  MainMenu: SaveButton,
+  MainMenu: MainMenu,
+  SharePanel: HomePanel,
 };
 export const Whiteboard = ({ snapshot }: WhiteboardProps) => {
   return (

@@ -1,13 +1,7 @@
-import {
-  DefaultMainMenu,
-  DefaultMainMenuContent,
-  TldrawUiMenuGroup,
-  TldrawUiMenuItem,
-  useDialogs,
-} from "tldraw";
+import { TldrawUiMenuGroup, TldrawUiMenuItem, useDialogs } from "tldraw";
 import { SaveDialog } from "./save-dialog";
 
-export const SaveButton = () => {
+export const SaveNewButton = () => {
   const { addDialog } = useDialogs();
   const handleSelect = () => {
     addDialog({
@@ -16,18 +10,15 @@ export const SaveButton = () => {
     });
   };
   return (
-    <DefaultMainMenu>
-      <div>
-        <TldrawUiMenuGroup id="save-button">
-          <TldrawUiMenuItem
-            id="save"
-            label="Save"
-            readonlyOk
-            onSelect={handleSelect}
-          />
-        </TldrawUiMenuGroup>
-      </div>
-      <DefaultMainMenuContent />
-    </DefaultMainMenu>
+    <div>
+      <TldrawUiMenuGroup id="save-new-button">
+        <TldrawUiMenuItem
+          id="save-new"
+          label="Save as..."
+          readonlyOk
+          onSelect={handleSelect}
+        />
+      </TldrawUiMenuGroup>
+    </div>
   );
 };

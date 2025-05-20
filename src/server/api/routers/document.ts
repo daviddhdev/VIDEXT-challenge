@@ -52,4 +52,12 @@ export const documentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.delete(documents).where(eq(documents.id, input.id));
     }),
+  update: publicProcedure
+    .input(z.object({ id: z.number(), content: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(documents)
+        .set({ content: input.content })
+        .where(eq(documents.id, input.id));
+    }),
 });
