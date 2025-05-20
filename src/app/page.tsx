@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Button } from "~/components/ui/button";
 import { HydrateClient } from "~/trpc/server";
 import { Documents } from "./_components/documents";
+import { DocumentsSkeleton } from "./_components/documents-skeleton";
 
 export default async function Home() {
   return (
@@ -18,7 +20,9 @@ export default async function Home() {
         <Button asChild variant="default" size="lg">
           <Link href="/whiteboard">Open new whiteboard</Link>
         </Button>
-        <Documents />
+        <Suspense fallback={<DocumentsSkeleton />}>
+          <Documents />
+        </Suspense>
       </main>
     </HydrateClient>
   );

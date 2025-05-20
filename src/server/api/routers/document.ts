@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { documents } from "~/server/db/schema";
@@ -44,5 +45,11 @@ export const documentRouter = createTRPCRouter({
       return await ctx.db.query.documents.findFirst({
         where: (documents, { eq }) => eq(documents.id, input.id),
       });
+    }),
+
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.delete(documents).where(eq(documents.id, input.id));
     }),
 });
