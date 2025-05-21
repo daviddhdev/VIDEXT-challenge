@@ -1,25 +1,14 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useDialogs, useEditor } from "tldraw";
 import { Button } from "~/components/ui/button";
+import { useDirtyState } from "~/hooks/useDirtyState";
 import { UnsavedChangesDialog } from "./unsaved-changes-dialog";
 
 export const HomePanel = () => {
   const editor = useEditor();
   const { addDialog } = useDialogs();
   const router = useRouter();
-  const [isDirty, setIsDirty] = useState(false);
-  useEffect(() => {
-    const unlisten = editor.store.listen(
-      () => {
-        setIsDirty(true);
-      },
-      { scope: "document", source: "user" }
-    );
-    return () => {
-      unlisten();
-    };
-  }, [editor.store]);
+  const isDirty = useDirtyState();
 
   const handleClick = () => {
     if (isDirty) {
