@@ -1,4 +1,4 @@
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   getSnapshot,
@@ -10,6 +10,7 @@ import { api } from "~/trpc/react";
 
 export const SaveExistingButton = () => {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id;
   const editor = useEditor();
   const { mutateAsync: updateDocument } = api.document.update.useMutation();
@@ -21,7 +22,7 @@ export const SaveExistingButton = () => {
         id: Number(id),
         content: JSON.stringify(document),
       });
-
+      router.push(`/whiteboard/${id}`);
       toast.success(`Document saved successfully`);
     } catch (error) {
       toast.error("Failed to save document");

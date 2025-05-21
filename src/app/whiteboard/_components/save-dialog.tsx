@@ -1,5 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
@@ -34,19 +35,21 @@ interface SaveDialogProps {
 
 export const SaveDialog: React.FC<SaveDialogProps> = ({ onClose }) => {
   const editor = useEditor();
+  const router = useRouter();
   const { mutateAsync: createDocument, isPending } =
     api.document.create.useMutation();
 
   const onSubmit = async ({ documentName }: { documentName: string }) => {
     const { document } = getSnapshot(editor.store);
     try {
-      await createDocument({
+      const { lastInsertRowid: id } = await createDocument({
         name: documentName,
         content: JSON.stringify(document),
       });
 
       onClose();
       toast.success(`Document ${documentName} saved successfully`);
+      router.push(`/whiteboard/${id}`);
     } catch (error) {
       if (error instanceof Error && error.message.includes("already exists")) {
         form.setError("documentName", {
