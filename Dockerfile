@@ -2,7 +2,6 @@
 FROM node:20-alpine AS builder
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV DATABASE_URL="file:/app/db.sqlite"
 RUN corepack enable
 
 # Set the working directory
@@ -28,6 +27,8 @@ WORKDIR /app
 # Set next telemetry disabled
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV DATABASE_URL="file:/app/db.sqlite"
+
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -39,9 +40,9 @@ COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/db.sqlite ./db.sqlite
 
-# Set proper permissions for the database file
-RUN chown nextjs:nodejs /app/db.sqlite && \
-    chmod 644 /app/db.sqlite
+# Set proper permissions
+RUN chown -R nextjs:nodejs /app && \
+    chmod 666 /app/db.sqlite
 
 # Switch to non-root user
 USER nextjs
@@ -49,8 +50,8 @@ USER nextjs
 # Expose the port
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Start the server using the standalone build
 CMD ["node", "server.js"]
