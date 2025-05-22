@@ -11,8 +11,8 @@
 1. Clone the repository:
 
 ```bash
-git clone <your-repository-url>
-cd vidext-test
+git clone https://github.com/daviddhdev/VIDEXT-challenge.git
+cd VIDEXT-challenge
 ```
 
 2. Install dependencies:
