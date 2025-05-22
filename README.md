@@ -1,5 +1,7 @@
 # Whiteboard Application
 
+You can try the live demo at [https://vidext.daviddh.dev/](https://vidext.daviddh.dev/) where all AI functionalities are working.
+
 ## Prerequisites
 
 - Node.js
