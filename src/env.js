@@ -11,8 +11,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    CLOUDFLARE_API_TOKEN: z.string(),
-    CLOUDFLARE_ACCOUNT_ID: z.string(),
+    CLOUDFLARE_API_TOKEN: z.string().optional(),
+    CLOUDFLARE_ACCOUNT_ID: z.string().optional(),
   },
 
   /**

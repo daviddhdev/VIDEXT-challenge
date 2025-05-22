@@ -30,7 +30,7 @@ CLOUDFLARE_API_TOKEN=your_api_token
 CLOUDFLARE_ACCOUNT_ID=your_account_id
 ```
 
-The Cloudflare API token and account ID are used to make AI calls.
+The Cloudflare API token and account ID are used to make AI calls. https://developers.cloudflare.com/workers-ai/get-started/rest-api/
 
 4. Initialize the database:
 

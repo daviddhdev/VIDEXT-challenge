@@ -11,6 +11,11 @@ export const aiRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       try {
+        const cloudflareAccountId = env.CLOUDFLARE_ACCOUNT_ID;
+        const cloudflareApiToken = env.CLOUDFLARE_API_TOKEN;
+        if (!cloudflareAccountId || !cloudflareApiToken) {
+          throw new Error("Cloudflare account ID or API token not set");
+        }
         // Convert base64 to byte array
         const base64Data = input.image.startsWith("data:")
           ? input.image.split(",")[1] ?? ""
@@ -22,11 +27,11 @@ export const aiRouter = createTRPCRouter({
         const imageArray = Array.from(imageBytes);
 
         const response = await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/llava-hf/llava-1.5-7b-hf`,
+          `https://api.cloudflare.com/client/v4/accounts/${cloudflareAccountId}/ai/run/@cf/llava-hf/llava-1.5-7b-hf`,
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+              Authorization: `Bearer ${cloudflareApiToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -40,10 +45,7 @@ export const aiRouter = createTRPCRouter({
         if (!response.ok) {
           const errorData = await response.json().catch(() => null);
           console.error("Cloudflare AI error:", errorData);
-          throw new Error(
-            errorData?.errors?.[0]?.message ||
-              "Failed to get description from Cloudflare AI"
-          );
+          throw new Error("Failed to get description from Cloudflare AI");
         }
 
         const data = await response.json();

@@ -28,7 +28,7 @@ export const AIDescriptionButton = () => {
     },
     onError: (error) => {
       console.error("Error getting description:", error);
-      toast.error("Failed to get description. Please try again.");
+      toast.error(`Failed to get description: ${error.message}`);
     },
   });
 
